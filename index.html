@@ -10,8 +10,43 @@
   </head>
   <body>
     <header>
-      <h1>Star Wars Library</h1>
+      <h1>STAR WARS LIBRARY</h1>
     </header>
-    <main></main>
+    <div id="modal" class="modal">
+      <form id="new-book-form">
+        <button class="close" type="button">x</button>
+        <h1>New Book</h1>
+        <label for="book-title"
+          >Title: <input id="book-title" name="book-title" type="text" required
+        /></label>
+        <label for="book-author"
+          >Author:
+          <input id="book-author" name="book-author" type="text" required
+        /></label>
+        <label for="book-title"
+          >Era: <input id="book-era" name="book-era" type="text" required
+        /></label>
+        <label for="book-read"
+          >Read: <input id="book-read" name="book-read" type="checkbox"
+        /></label>
+        <button class="new-submit-btn" type="submit">Submit</button>
+      </form>
+    </div>
+    <div id="overlay"></div>
+    <main>
+      <button class="new-btn">New Book</button>
+
+      <div class="grid-container">
+        <!-- <div class="card">
+          <p>Title:</p>
+          <p>Author:</p>
+          <p>Era:</p>
+          <p>Read:</p>
+        </div> -->
+      </div>
+    </main>
+    <footer>
+      <p>2022 &copy; Jayson Haddon</p>
+    </footer>
   </body>
 </html>
