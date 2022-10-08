@@ -1,0 +1,37 @@
+TODOS
+
+Front End:
+    Create Books and add to library
+        - Button on top of screen to add book
+        - Display modal/pop-up with form fields for user to complete
+        - Validate form fields before creating book object
+        - Add book to library array
+        - Display book card on screen in grid
+        - Book card has an edit, delete Button
+    Edit a book
+        - Button on book card to edit
+        - Display a modal/pop-up with form fields that display the current data,
+          and can be edited by the user
+        - Validate form fields before updating the book object (need to keep track
+          of books based on ID)
+        - Update the card to display the new values
+    Delete a book
+        - Button on book card to delete
+        - Display a modal/pop-up with book title and confirmation buttons to
+          continue or cancel the deletion
+        - Remove the card from the grid display
+        - Delete the card from the library array
+
+Back End:
+    - Create a SQLite library database
+    - Single book table
+    - ID, title, author, timeline, category, read
+    - Next.js REST API
+    - Routes to create, read, update, delete
+
+Wishlist
+    - Save book images to database
+    - Split database into multiple tables
+    - Search field to find an individual book
+    - Filter options to sort books
+    - User account/login/authentication

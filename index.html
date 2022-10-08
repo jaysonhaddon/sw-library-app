@@ -14,8 +14,8 @@
     </header>
     <div id="modal" class="modal">
       <form id="new-book-form">
-        <button class="close" type="button">x</button>
-        <h1>New Book</h1>
+        <button class="close-btn" type="button">x</button>
+        <h1>Info</h1>
         <label for="book-title"
           >Title: <input id="book-title" name="book-title" type="text" required
         /></label>
@@ -23,9 +23,24 @@
           >Author:
           <input id="book-author" name="book-author" type="text" required
         /></label>
-        <label for="book-title"
-          >Era: <input id="book-era" name="book-era" type="text" required
-        /></label>
+        <label for="book-timeline"
+          >Timeline:
+          <select name="book-timeline" id="book-timeline" form="new-book-form">
+            <option value="high">The High Republic</option>
+            <option value="fall">Fall of the Jedi</option>
+            <option value="reign">Reign of the Empire</option>
+            <option value="age">Age of Rebellion</option>
+            <option value="new">The New Republic</option>
+            <option value="rise">Rise of the First Order</option>
+          </select></label
+        >
+        <label for="book-cat"
+          >Category:
+          <select name="book-cat" id="book-cat" form="new-book-form">
+            <option value="adult">Adult</option>
+            <option value="YA">YA</option>
+          </select></label
+        >
         <label for="book-read"
           >Read: <input id="book-read" name="book-read" type="checkbox"
         /></label>
@@ -34,19 +49,23 @@
     </div>
     <div id="overlay"></div>
     <main>
-      <button class="new-btn">New Book</button>
-
-      <div class="grid-container">
-        <!-- <div class="card">
-          <p>Title:</p>
-          <p>Author:</p>
-          <p>Era:</p>
-          <p>Read:</p>
-        </div> -->
-      </div>
+      <button class="new-btn">NEW BOOK</button>
+      <div class="grid-container"></div>
     </main>
     <footer>
       <p>2022 &copy; Jayson Haddon</p>
+      <p>
+        Starfield Photo by
+        <a
+          href="https://unsplash.com/@jeremyperkins?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+          >Jeremy Perkins</a
+        >
+        on
+        <a
+          href="https://unsplash.com/s/photos/stars?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText"
+          >Unsplash</a
+        >
+      </p>
     </footer>
   </body>
 </html>

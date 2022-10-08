@@ -1,22 +1,29 @@
 const gridContainer = document.querySelector(".grid-container");
 const newBtn = document.querySelector(".new-btn");
-const closeBtn = document.querySelector(".close");
+const closeBtn = document.querySelector(".close-btn");
 const newBookForm = document.querySelector("#new-book-form");
 const overlay = document.querySelector("#overlay");
 const modal = document.querySelector("#modal");
 
 let library = [];
 
-function Book(title, author, era, read) {
+function Book(title, author, timeline, category, read) {
   this.title = title;
   this.author = author;
-  this.era = era;
+  this.timeline = timeline;
+  this.category = category;
   this.read = read;
 }
 
 // Called by create button in pop up
 function addBookToLibrary(elements) {
-  newBook = new Book(elements[0].value, elements[1].value, elements[2].value);
+  newBook = new Book(
+    elements["book-title"].value,
+    elements["book-author"].value,
+    elements["book-timeline"].value,
+    elements["book-cat"].value,
+    elements["book-read"].value
+  );
   library.push(newBook);
   createBookCard(newBook);
 }
@@ -46,7 +53,7 @@ newBookForm.addEventListener("submit", (event) => {
 });
 
 function validateForm(form) {
-  for (let i = 1; i < 5; i++) {
+  for (let i = 1; i < 6; i++) {
     let current = form.elements[i].value;
     console.log(current);
     if (current.trim().length == 0 || current == undefined || current == null) {
@@ -76,17 +83,31 @@ function toggleModal() {
 function createBookCard(book) {
   const card = document.createElement("div");
   card.classList.add("card");
-  const sections = [];
-  for (let i = 0; i < 4; i++) {
+
+  const textDiv = document.createElement("div");
+  textDiv.classList.add("card-text");
+  const cardText = [];
+  for (let i = 0; i < 5; i++) {
     let temp = document.createElement("p");
-    sections.push(temp);
+    cardText.push(temp);
   }
-  sections[0].textContent = `Title: ${book.title}`;
-  sections[1].textContent = `Author: ${book.author}`;
-  sections[2].textContent = `Era: ${book.era}`;
-  sections[3].textContent = `Read: ${book.read}`;
-  sections.forEach((element) => {
-    card.appendChild(element);
+  cardText[0].textContent = `Title: ${book.title}`;
+  cardText[1].textContent = `Author: ${book.author}`;
+  cardText[2].textContent = `Timeline: ${book.timeline}`;
+  cardText[3].textContent = `Category: ${book.category}`;
+  cardText[4].textContent = `Read: ${book.read}`;
+  cardText.forEach((element) => {
+    textDiv.appendChild(element);
   });
+
+  const buttonDiv = document.createElement("div");
+  buttonDiv.classList.add("card-btn");
+  const editBtn = document.createElement("button");
+  const deleteBtn = document.createElement("button");
+  editBtn.textContent = "EDIT";
+  deleteBtn.textContent = "DELETE";
+  buttonDiv.append(editBtn, deleteBtn);
+
+  card.append(textDiv, buttonDiv);
   gridContainer.appendChild(card);
 }

@@ -1,8 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap");
 
+:root {
+  --site-font: "Roboto", sans-serif;
+}
+
 * {
   box-sizing: border-box;
-  font-family: "Roboto", sans-serif;
+  font-family: var(--site-font);
 }
 
 #overlay {
@@ -25,7 +29,8 @@
 body {
   height: 100vh;
   color: white;
-  background-color: black;
+  background-image: url(./jeremy-perkins-uhjiu8FjnsQ-unsplash.jpg);
+  background-size: cover;
   display: flex;
   flex-direction: column;
 }
@@ -73,7 +78,7 @@ main {
   padding: 0;
 }
 
-.modal .close {
+.modal .close-btn {
   border: 1px solid black;
   border-radius: 2px;
   padding: 1px 5px;
@@ -86,7 +91,7 @@ main {
   font-weight: 900;
 }
 
-.modal .close:hover {
+.modal .close-btn:hover {
   background-color: goldenrod;
 }
 
@@ -119,19 +124,66 @@ button:hover {
 
 .grid-container {
   border: 1px solid gold;
+  background-color: black;
   padding: 15px;
-  width: 100%;
+  max-width: 100%;
   height: auto;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 50px;
 }
 
 .card {
+  padding: 25px;
+  color: black;
   border-radius: 10px;
-  background-color: darkgrey;
+  background-color: whitesmoke;
   height: 300px;
   width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.card-text {
+  font-size: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.card-text > p {
+  margin: 0;
+  padding: 0;
+}
+
+.card-btn {
+  align-self: center;
+  display: flex;
+  gap: 25px;
+}
+
+.card-btn > button {
+  font-family: var(--site-font);
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 10px;
+  width: 100px;
+  height: 50px;
+}
+
+.card-btn > button:hover {
+  color: whitesmoke;
+  background-color: darkgoldenrod;
+}
+
+.card-btn > :nth-child(2) {
+  color: darkred;
+}
+
+.card-btn > :nth-child(2):hover {
+  color: whitesmoke;
+  background-color: darkred;
 }
 
 footer {
