@@ -16,7 +16,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.75);
   transition: 200ms ease-in-out;
   pointer-events: none;
 }
@@ -51,6 +51,7 @@ main {
 }
 
 .modal {
+  color: black;
   position: fixed;
   top: 50%;
   left: 50%;
@@ -66,6 +67,27 @@ main {
   width: 300px;
   height: 400px;
   max-width: 80%;
+}
+
+.modal.delete-modal {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 15px;
+}
+
+.delete-modal h1,
+h2,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+.dm-btns {
+  display: flex;
+  gap: 50px;
 }
 
 .modal.active {
@@ -172,7 +194,8 @@ button:hover {
   height: 50px;
 }
 
-.card-btn > button:hover {
+.card-btn > button:hover,
+.dm-btns > button:hover {
   color: whitesmoke;
   background-color: darkgoldenrod;
 }
@@ -181,7 +204,8 @@ button:hover {
   color: darkred;
 }
 
-.card-btn > :nth-child(2):hover {
+.card-btn > :nth-child(2):hover,
+.dm-btns > :nth-child(2):hover {
   color: whitesmoke;
   background-color: darkred;
 }

@@ -3,9 +3,13 @@ const newBtn = document.querySelector(".new-btn");
 const closeBtn = document.querySelector(".close-btn");
 const newBookForm = document.querySelector("#new-book-form");
 const overlay = document.querySelector("#overlay");
-const modal = document.querySelector("#modal");
+const newBookModal = document.querySelector("#nb-modal");
+const deleteModal = document.querySelector("#delete-modal");
+const backBtns = document.querySelectorAll(".back-btn");
+const deleteBtn = document.querySelector(".delete-btn");
 
-let library = [];
+let cardID = 0;
+let activeBookCard;
 
 function Book(title, author, timeline, category, read) {
   this.title = title;
@@ -24,18 +28,40 @@ function addBookToLibrary(elements) {
     elements["book-cat"].value,
     elements["book-read"].value
   );
-  library.push(newBook);
-  createBookCard(newBook);
+  const bookCard = createBookCard(newBook);
+  bookCard.setAttribute("data-id", cardID);
+  cardID++;
+  console.log(cardID);
+}
+
+function deleteBookFromLibrary(bookCard) {
+  const index = +bookCard.getAttribute("data-id");
+
+  // Use fetch to delete record from SQL database based on ID
+  bookCard.remove();
+}
+
+function editBookInLibrary(bookCard) {
+  const index = +bookCard.getAttribute("data-id");
+  // display a modal pop up to edit values
+  // validate values
+  // Use fetch to edit record from SQL database based on ID
+  // update card on screen
 }
 
 newBtn.addEventListener("click", () => {
   console.log("Add button was clicked!");
-  toggleModal();
+  toggleModal(newBookModal);
 });
 
 closeBtn.addEventListener("click", () => {
-  toggleModal();
+  toggleModal(newBookModal);
   resetForm(newBookForm);
+});
+
+deleteBtn.addEventListener("click", () => {
+  deleteBookFromLibrary(activeBookCard);
+  toggleModal(deleteModal);
 });
 
 newBookForm.addEventListener("submit", (event) => {
@@ -45,7 +71,7 @@ newBookForm.addEventListener("submit", (event) => {
   let validForm = validateForm(newBookForm);
   if (validForm) {
     addBookToLibrary(newBookForm.elements);
-    toggleModal();
+    toggleModal(newBookModal);
     resetForm(newBookForm);
   } else {
     // Display errors in the modal
@@ -75,7 +101,7 @@ function resetForm(form) {
   }
 }
 
-function toggleModal() {
+function toggleModal(modal) {
   overlay.classList.toggle("active");
   modal.classList.toggle("active");
 }
@@ -91,9 +117,9 @@ function createBookCard(book) {
     let temp = document.createElement("p");
     cardText.push(temp);
   }
-  cardText[0].textContent = `Title: ${book.title}`;
-  cardText[1].textContent = `Author: ${book.author}`;
-  cardText[2].textContent = `Timeline: ${book.timeline}`;
+  cardText[0].textContent = `Title: ${titleCase(book.title)}`;
+  cardText[1].textContent = `Author: ${titleCase(book.author)}`;
+  cardText[2].textContent = `Timeline: ${titleCase(book.timeline)}`;
   cardText[3].textContent = `Category: ${book.category}`;
   cardText[4].textContent = `Read: ${book.read}`;
   cardText.forEach((element) => {
@@ -108,6 +134,32 @@ function createBookCard(book) {
   deleteBtn.textContent = "DELETE";
   buttonDiv.append(editBtn, deleteBtn);
 
+  editBtn.addEventListener("click", () => {
+    console.log("You clicked the edit button!");
+  });
+
+  deleteBtn.addEventListener("click", () => {
+    console.log("You clicked the delete button!");
+    deleteModal.children[2].textContent = ` ${cardText[0].textContent}`;
+    toggleModal(deleteModal);
+    setActiveBookCard(card);
+  });
+
   card.append(textDiv, buttonDiv);
   gridContainer.appendChild(card);
+  return card;
+}
+
+function setActiveBookCard(bookCard) {
+  activeBookCard = bookCard;
+  console.log(activeBookCard);
+}
+
+// Function used to format string into title case
+function titleCase(sentence) {
+  let tmp = sentence.toLowerCase().split(" ");
+  let corrected = tmp.map((word) => {
+    return word[0].toUpperCase() + word.substring(1);
+  });
+  return corrected.join(" ");
 }
