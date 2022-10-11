@@ -7,31 +7,96 @@ const newBookModal = document.querySelector("#nb-modal");
 const deleteModal = document.querySelector("#delete-modal");
 const backBtns = document.querySelectorAll(".back-btn");
 const deleteBtn = document.querySelector(".delete-btn");
-
-let cardID = 0;
 let activeBookCard;
+let cardID = 0;
 
-function Book(title, author, timeline, category, read) {
+querySelectionData();
+queryAllBooks();
+
+function Book(title, author, timeline, category, read, id) {
   this.title = title;
   this.author = author;
   this.timeline = timeline;
   this.category = category;
   this.read = read;
+  this.id = id;
+}
+
+// Called by Form field creator to populate selection choices
+async function querySelectionData() {
+  const options = {
+    method: "GET",
+  };
+  const authorResponse = await fetch(
+    "http://127.0.0.1:3000/api/authors",
+    options
+  );
+  const authors = await authorResponse.json();
+
+  const timelineResponse = await fetch(
+    "http://127.0.0.1:3000/api/timeline",
+    options
+  );
+  const timeline = await timelineResponse.json();
+
+  const genreResponse = await fetch("http://127.0.0.1:3000/api/genre", options);
+  const genre = await genreResponse.json();
+
+  console.log(authors);
+  console.log(timeline);
+  console.log(genre);
+}
+
+// Called when app runs to retrieve all stored book data and create cards
+async function queryAllBooks() {
+  const options = {
+    method: "GET",
+  };
+  const response = await fetch("http://127.0.0.1:3000/api/all", options);
+  const bookData = await response.json();
+  bookData.forEach((book) => {
+    console.log(book);
+    const newBook = new Book(
+      book.title,
+      `${book.first_name} ${book.last_name}`,
+      book.time_period,
+      book.category,
+      book.read,
+      book.id
+    );
+    const bookCard = createBookCard(newBook);
+    bookCard.setAttribute("data-id", newBook.id);
+  });
 }
 
 // Called by create button in pop up
-function addBookToLibrary(elements) {
-  newBook = new Book(
+async function addBookToLibrary(elements) {
+  const newBook = new Book(
     elements["book-title"].value,
     elements["book-author"].value,
     elements["book-timeline"].value,
     elements["book-cat"].value,
     elements["book-read"].value
   );
-  const bookCard = createBookCard(newBook);
-  bookCard.setAttribute("data-id", cardID);
+
+  console.log(newBook);
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(newBook),
+  };
+
+  const response = await fetch("http://127.0.0.1:3000/api", options);
+  const data = await response.json();
+  console.log(data.data);
+
+  newBook.id = cardID;
+  console.log(newBook);
+  const bookCard = createBookCard(data.data);
+  bookCard.setAttribute("data-id", newBook.id);
   cardID++;
-  console.log(cardID);
 }
 
 function deleteBookFromLibrary(bookCard) {
@@ -70,7 +135,10 @@ newBookForm.addEventListener("submit", (event) => {
   console.log(newBookForm.elements);
   let validForm = validateForm(newBookForm);
   if (validForm) {
-    addBookToLibrary(newBookForm.elements);
+    addBookToLibrary(newBookForm.elements).catch((error) => {
+      alert(error);
+      return;
+    });
     toggleModal(newBookModal);
     resetForm(newBookForm);
   } else {
