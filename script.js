@@ -7,8 +7,7 @@ const newBookModal = document.querySelector("#nb-modal");
 const deleteModal = document.querySelector("#delete-modal");
 const backBtns = document.querySelectorAll(".back-btn");
 const deleteBtn = document.querySelector(".delete-btn");
-let activeBookCard;
-let cardID = 0;
+const API_URL = "http://127.0.0.1:3000/api";
 
 querySelectionData();
 queryAllBooks();
@@ -22,29 +21,53 @@ function Book(title, author, timeline, category, read, id) {
   this.id = id;
 }
 
-// Called by Form field creator to populate selection choices
+// Builds the option elements for the new book form drop down menus
+function buildFormMenus(formData) {
+  const authorMenu = document.querySelector("#book-author");
+  const timelineMenu = document.querySelector("#book-timeline");
+  const categoryMenu = document.querySelector("#book-cat");
+
+  formData[0].forEach((item) => {
+    const option = document.createElement("option");
+    option.setAttribute("value", item.id);
+    option.textContent = `${item.first_name} ${item.last_name}`;
+    authorMenu.appendChild(option);
+  });
+
+  formData[1].forEach((item) => {
+    const option = document.createElement("option");
+    option.setAttribute("value", item.id);
+    option.textContent = item.time_period;
+    timelineMenu.appendChild(option);
+  });
+
+  formData[2].forEach((item) => {
+    const option = document.createElement("option");
+    option.setAttribute("value", item.id);
+    option.textContent = item.category;
+    categoryMenu.appendChild(option);
+  });
+}
+
+// Called when app runs to query drop down menu values and build options for form fields
 async function querySelectionData() {
+  const selectionData = [];
   const options = {
     method: "GET",
   };
-  const authorResponse = await fetch(
-    "http://127.0.0.1:3000/api/authors",
-    options
-  );
+  const authorResponse = await fetch(`${API_URL}/authors`, options);
   const authors = await authorResponse.json();
+  selectionData.push(authors);
 
-  const timelineResponse = await fetch(
-    "http://127.0.0.1:3000/api/timeline",
-    options
-  );
+  const timelineResponse = await fetch(`${API_URL}/timeline`, options);
   const timeline = await timelineResponse.json();
+  selectionData.push(timeline);
 
-  const genreResponse = await fetch("http://127.0.0.1:3000/api/genre", options);
+  const genreResponse = await fetch(`${API_URL}/genre`, options);
   const genre = await genreResponse.json();
+  selectionData.push(genre);
 
-  console.log(authors);
-  console.log(timeline);
-  console.log(genre);
+  buildFormMenus(selectionData);
 }
 
 // Called when app runs to retrieve all stored book data and create cards
@@ -52,10 +75,9 @@ async function queryAllBooks() {
   const options = {
     method: "GET",
   };
-  const response = await fetch("http://127.0.0.1:3000/api/all", options);
+  const response = await fetch(`${API_URL}/all`, options);
   const bookData = await response.json();
   bookData.forEach((book) => {
-    console.log(book);
     const newBook = new Book(
       book.title,
       `${book.first_name} ${book.last_name}`,
@@ -79,7 +101,6 @@ async function addBookToLibrary(elements) {
     elements["book-read"].value
   );
 
-  console.log(newBook);
   const options = {
     method: "POST",
     headers: {
@@ -88,21 +109,29 @@ async function addBookToLibrary(elements) {
     body: JSON.stringify(newBook),
   };
 
-  const response = await fetch("http://127.0.0.1:3000/api", options);
-  const data = await response.json();
-  console.log(data.data);
+  const response = await fetch(`${API_URL}/new-book`, options);
+  const bookID = await response.json();
+  console.log(bookID.data);
 
-  newBook.id = cardID;
-  console.log(newBook);
-  const bookCard = createBookCard(data.data);
+  newBook.id = bookID.data;
+  const bookCard = createBookCard(newBook);
   bookCard.setAttribute("data-id", newBook.id);
-  cardID++;
 }
 
-function deleteBookFromLibrary(bookCard) {
-  const index = +bookCard.getAttribute("data-id");
+async function deleteBookFromLibrary(bookCard) {
+  const bookID = +bookCard.getAttribute("data-id");
 
-  // Use fetch to delete record from SQL database based on ID
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ id: bookID }),
+  };
+
+  const response = await fetch(`${API_URL}/delete-book`, options);
+  const message = await response.json();
+  console.log(message);
   bookCard.remove();
 }
 
@@ -132,8 +161,7 @@ deleteBtn.addEventListener("click", () => {
 newBookForm.addEventListener("submit", (event) => {
   event.preventDefault();
   console.log("New Book form was submitted");
-  console.log(newBookForm.elements);
-  let validForm = validateForm(newBookForm);
+  const validForm = validateForm(newBookForm);
   if (validForm) {
     addBookToLibrary(newBookForm.elements).catch((error) => {
       alert(error);
@@ -147,9 +175,9 @@ newBookForm.addEventListener("submit", (event) => {
 });
 
 function validateForm(form) {
-  for (let i = 1; i < 6; i++) {
+  const numFields = 6;
+  for (let i = 1; i < numFields; i++) {
     let current = form.elements[i].value;
-    console.log(current);
     if (current.trim().length == 0 || current == undefined || current == null) {
       console.log("Field data is not valid");
       return false;
@@ -159,8 +187,8 @@ function validateForm(form) {
 }
 
 function resetForm(form) {
+  console.log("Reseting new book form");
   for (let i = 1; i < 5; i++) {
-    console.log(`i: ${i}  ${form.elements[i].value}`);
     if (i == 3) {
       form.elements[i].checked = false;
     } else {
