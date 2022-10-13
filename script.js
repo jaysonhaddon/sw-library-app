@@ -8,10 +8,14 @@ const deleteModal = document.querySelector("#delete-modal");
 const backBtns = document.querySelectorAll(".back-btn");
 const deleteBtn = document.querySelector(".delete-btn");
 const API_URL = "http://127.0.0.1:3000/api";
+let activeBookCard;
+let selectOptions = [];
 
+// Initial queries for exisiting books and form selection fields
 querySelectionData();
 queryAllBooks();
 
+// Constructor for Book object that will be used to create book cards and POST data
 function Book(title, author, timeline, category, read, id) {
   this.title = title;
   this.author = author;
@@ -67,6 +71,9 @@ async function querySelectionData() {
   const genre = await genreResponse.json();
   selectionData.push(genre);
 
+  selectionData.forEach((item) => {
+    selectOptions.push(item);
+  });
   buildFormMenus(selectionData);
 }
 
@@ -93,11 +100,12 @@ async function queryAllBooks() {
 
 // Called by create button in pop up
 async function addBookToLibrary(elements) {
+  // Creates book object that with values that will be sent to database
   const newBook = new Book(
     elements["book-title"].value,
-    elements["book-author"].value,
-    elements["book-timeline"].value,
-    elements["book-cat"].value,
+    +elements["book-author"].value,
+    +elements["book-timeline"].value,
+    +elements["book-cat"].value,
     elements["book-read"].value
   );
 
@@ -111,18 +119,35 @@ async function addBookToLibrary(elements) {
 
   const response = await fetch(`${API_URL}/new-book`, options);
   const bookID = await response.json();
-  console.log(bookID.data);
 
+  // Update values of book object to corresponding character data
+  const authorObject = findSelectionValue(
+    selectOptions[0],
+    +elements["book-author"].value
+  );
+  const authorName = `${authorObject.first_name} ${authorObject.last_name}`;
+  newBook.author = authorName;
+  newBook.timeline = findSelectionValue(
+    selectOptions[1],
+    newBook.timeline
+  ).time_period;
+  newBook.category = findSelectionValue(
+    selectOptions[2],
+    newBook.category
+  ).category;
   newBook.id = bookID.data;
+
+  // Create book card element for DOM
   const bookCard = createBookCard(newBook);
   bookCard.setAttribute("data-id", newBook.id);
 }
 
+// Called by delete modal button to remove the book from database
 async function deleteBookFromLibrary(bookCard) {
   const bookID = +bookCard.getAttribute("data-id");
 
   const options = {
-    method: "POST",
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
     },
@@ -143,21 +168,25 @@ function editBookInLibrary(bookCard) {
   // update card on screen
 }
 
+// NEW BOOK button in DOM
 newBtn.addEventListener("click", () => {
   console.log("Add button was clicked!");
   toggleModal(newBookModal);
 });
 
+// [x] button that closes the new book modal
 closeBtn.addEventListener("click", () => {
   toggleModal(newBookModal);
   resetForm(newBookForm);
 });
 
+// Delete button in the delete modal
 deleteBtn.addEventListener("click", () => {
   deleteBookFromLibrary(activeBookCard);
   toggleModal(deleteModal);
 });
 
+// Submit button on the new book form modal
 newBookForm.addEventListener("submit", (event) => {
   event.preventDefault();
   console.log("New Book form was submitted");
@@ -174,10 +203,12 @@ newBookForm.addEventListener("submit", (event) => {
   }
 });
 
+// Validates the user inputs in the form
 function validateForm(form) {
-  const numFields = 6;
-  for (let i = 1; i < numFields; i++) {
+  const numFields = 5;
+  for (let i = 1; i <= numFields; i++) {
     let current = form.elements[i].value;
+    console.log(typeof current);
     if (current.trim().length == 0 || current == undefined || current == null) {
       console.log("Field data is not valid");
       return false;
@@ -186,22 +217,19 @@ function validateForm(form) {
   return true;
 }
 
+// Resets the form values back to default
 function resetForm(form) {
   console.log("Reseting new book form");
-  for (let i = 1; i < 5; i++) {
-    if (i == 3) {
-      form.elements[i].checked = false;
-    } else {
-      form.elements[i].value = "";
-    }
-  }
+  form.elements["book-title"].value = "";
 }
 
+// Enables/Disables a modal and overlay
 function toggleModal(modal) {
   overlay.classList.toggle("active");
   modal.classList.toggle("active");
 }
 
+// Created the DOM element for each book
 function createBookCard(book) {
   const card = document.createElement("div");
   card.classList.add("card");
@@ -214,8 +242,8 @@ function createBookCard(book) {
     cardText.push(temp);
   }
   cardText[0].textContent = `Title: ${titleCase(book.title)}`;
-  cardText[1].textContent = `Author: ${titleCase(book.author)}`;
-  cardText[2].textContent = `Timeline: ${titleCase(book.timeline)}`;
+  cardText[1].textContent = `Author: ${book.author}`;
+  cardText[2].textContent = `Timeline: ${book.timeline}`;
   cardText[3].textContent = `Category: ${book.category}`;
   cardText[4].textContent = `Read: ${book.read}`;
   cardText.forEach((element) => {
@@ -246,12 +274,24 @@ function createBookCard(book) {
   return card;
 }
 
+// Sets the active book card to the DOM element that was clicked
 function setActiveBookCard(bookCard) {
   activeBookCard = bookCard;
   console.log(activeBookCard);
 }
 
-// Function used to format string into title case
+// Used to find the corresponding dictionary for form selection fields, based on the chosen field value
+function findSelectionValue(optionArray, fieldID) {
+  let match;
+  optionArray.forEach((item) => {
+    if (item.id == fieldID) {
+      match = item;
+    }
+  });
+  return match;
+}
+
+// Helper function used to format string into title case
 function titleCase(sentence) {
   let tmp = sentence.toLowerCase().split(" ");
   let corrected = tmp.map((word) => {

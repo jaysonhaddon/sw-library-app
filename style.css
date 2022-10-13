@@ -160,7 +160,7 @@ button:hover {
   color: black;
   border-radius: 10px;
   background-color: whitesmoke;
-  height: 300px;
+  min-height: 300px;
   width: 300px;
   display: flex;
   flex-direction: column;
