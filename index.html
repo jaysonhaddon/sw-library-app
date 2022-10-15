@@ -39,9 +39,21 @@
           >Category:
           <select name="book-cat" id="book-cat" form="new-book-form"></select
         ></label>
-        <label for="book-read"
-          >Read: <input id="book-read" name="book-read" type="checkbox"
-        /></label>
+        <div id="read-radio-btns">
+          <input
+            type="radio"
+            id="read-yes"
+            name="book-read"
+            value="yes"
+          /><label for="read-yes">Read</label>
+          <input
+            type="radio"
+            id="read-no"
+            name="book-read"
+            value="no"
+            checked="checked"
+          /><label for="read-yes">Unread</label>
+        </div>
         <button class="new-submit-btn" type="submit">Submit</button>
       </form>
     </div>

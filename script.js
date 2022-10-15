@@ -245,7 +245,7 @@ function createBookCard(book) {
   cardText[1].textContent = `Author: ${book.author}`;
   cardText[2].textContent = `Timeline: ${book.timeline}`;
   cardText[3].textContent = `Category: ${book.category}`;
-  cardText[4].textContent = `Read: ${book.read}`;
+  cardText[4].textContent = `Read: ${titleCase(book.read)}`;
   cardText.forEach((element) => {
     textDiv.appendChild(element);
   });
