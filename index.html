@@ -15,7 +15,7 @@
     <div id="nb-modal" class="modal">
       <form id="new-book-form">
         <button class="close-btn" type="button">x</button>
-        <h1>Info</h1>
+        <h1>Book Info</h1>
         <label for="book-title"
           >Title: <input id="book-title" name="book-title" type="text" required
         /></label>
@@ -57,6 +57,21 @@
         <button class="new-submit-btn" type="submit">Submit</button>
       </form>
     </div>
+    <div id="author-modal" class="modal author-modal">
+      <button class="close-btn" type="button">x</button>
+      <h1>Author Info</h1>
+      <form id="author-form">
+        <label for="author-first"
+          >First Name:
+          <input id="author-first" name="author-first" type="text" required
+        /></label>
+        <label for="author-last"
+          >Last Name:
+          <input id="author-last" name="author-last" type="text" required
+        /></label>
+        <button id="new-author-submit" type="submit"></button>
+      </form>
+    </div>
     <div id="delete-modal" class="modal delete-modal">
       <h1>DELETE</h1>
       <h2>Are you sure?</h2>
@@ -68,7 +83,10 @@
     </div>
     <div id="overlay"></div>
     <main>
-      <button class="new-btn">NEW BOOK</button>
+      <div class="main-btns">
+        <button class="new-btn">NEW BOOK</button>
+        <button class="author-btn">NEW AUTHOR</button>
+      </div>
       <div class="grid-container"></div>
     </main>
     <footer>

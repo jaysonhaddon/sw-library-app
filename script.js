@@ -1,9 +1,11 @@
 const gridContainer = document.querySelector(".grid-container");
 const newBtn = document.querySelector(".new-btn");
-const closeBtn = document.querySelector(".close-btn");
+const authorBtn = document.querySelector(".author-btn");
+const closeBtn = document.querySelectorAll(".close-btn");
 const newBookForm = document.querySelector("#new-book-form");
 const overlay = document.querySelector("#overlay");
 const newBookModal = document.querySelector("#nb-modal");
+const newAuthorModal = document.querySelector("#author-modal");
 const deleteModal = document.querySelector("#delete-modal");
 const backBtns = document.querySelectorAll(".back-btn");
 const deleteBtn = document.querySelector(".delete-btn");
@@ -14,6 +16,7 @@ let selectOptions = [];
 // Initial queries for exisiting books and form selection fields
 querySelectionData();
 queryAllBooks();
+console.log(selectOptions);
 
 // Constructor for Book object that will be used to create book cards and POST data
 function Book(title, author, timeline, category, read, id) {
@@ -102,12 +105,13 @@ async function queryAllBooks() {
 async function addBookToLibrary(elements) {
   // Creates book object that with values that will be sent to database
   const newBook = new Book(
-    elements["book-title"].value,
+    titleCase(elements["book-title"].value),
     +elements["book-author"].value,
     +elements["book-timeline"].value,
     +elements["book-cat"].value,
-    elements["book-read"].value
+    titleCase(elements["book-read"].value)
   );
+  console.log(newBook);
 
   const options = {
     method: "POST",
@@ -121,10 +125,7 @@ async function addBookToLibrary(elements) {
   const bookID = await response.json();
 
   // Update values of book object to corresponding character data
-  const authorObject = findSelectionValue(
-    selectOptions[0],
-    +elements["book-author"].value
-  );
+  const authorObject = findSelectionValue(selectOptions[0], newBook.author);
   const authorName = `${authorObject.first_name} ${authorObject.last_name}`;
   newBook.author = authorName;
   newBook.timeline = findSelectionValue(
@@ -170,14 +171,35 @@ function editBookInLibrary(bookCard) {
 
 // NEW BOOK button in DOM
 newBtn.addEventListener("click", () => {
-  console.log("Add button was clicked!");
+  console.log("Add book button was clicked!");
   toggleModal(newBookModal);
 });
 
-// [x] button that closes the new book modal
-closeBtn.addEventListener("click", () => {
-  toggleModal(newBookModal);
-  resetForm(newBookForm);
+// NEW AUTHOR button in DOM
+authorBtn.addEventListener("click", () => {
+  console.log("Add author button was clicked!");
+  toggleModal(newAuthorModal);
+});
+
+// [x] button that closes the new book and author modals
+closeBtn.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    const parentElement = event.target.parentNode;
+    if (parentElement.id == "new-book-form") {
+      toggleModal(newBookModal);
+      resetForm(newBookForm);
+    } else {
+      toggleModal(newAuthorModal);
+    }
+  });
+});
+
+// Back Buttons on delete and edit modals
+backBtns.forEach((button) => {
+  button.addEventListener("click", (event) => {
+    const parentModal = event.target.parentNode.parentNode;
+    toggleModal(parentModal);
+  });
 });
 
 // Delete button in the delete modal
@@ -221,6 +243,10 @@ function validateForm(form) {
 function resetForm(form) {
   console.log("Reseting new book form");
   form.elements["book-title"].value = "";
+  form.elements["book-author"].value = "1";
+  form.elements["book-timeline"].value = "1";
+  form.elements["book-cat"].value = "1";
+  form.elements["book-read"].value = "no";
 }
 
 // Enables/Disables a modal and overlay
